@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgriTech Smart Farming</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#eff7ef;color:#20352a}
+header{background:#087747;color:white;text-align:center;padding:20px}
+header h1{margin:0 0 8px}
+nav{display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:#fff;justify-content:center}
+button{background:#087747;color:white;border:0;padding:11px 14px;border-radius:8px;cursor:pointer;font-weight:bold}
+nav button{flex:1;min-width:85px}
+button:hover{background:#075d38}
+main{max-width:850px;margin:auto;padding:14px}
+.card{background:white;padding:17px;margin:12px 0;border-radius:14px;box-shadow:0 3px 12px #0001}
+h2{color:#087747}
+input,select{display:block;width:100%;padding:12px;margin:9px 0;border:1px solid #ccd9cf;border-radius:8px;background:white}
+label{font-weight:bold;font-size:14px}
+.page{display:none}.page.active{display:block}
+.result{padding:12px;background:#e5f5e9;border-radius:9px;margin-top:12px;white-space:pre-wrap}
+img{max-width:100%;max-height:280px;display:block;margin:12px auto;border-radius:10px}
+small{color:#65766b}
+footer{text-align:center;padding:20px;color:#65766b}
+</style>
+</head>
+<body>
+<header>
+<h1>🌱 AgriTech</h1>
+<p>Smart Farming • Better Future</p>
+</header>
+
+<nav id="nav" style="display:none">
+<button onclick="show('home')">Home</button>
+<button onclick="show('leaf')">Leaf Check</button>
+<button onclick="show('yield')">Crop Yield</button>
+<button onclick="show('water')">Irrigation</button>
+<button onclick="show('soil')">Soil Health</button>
+<button onclick="show('food')">Food Waste</button>
+<button onclick="logout()">Logout</button>
+</nav>
+
+<main>
+<section id="login" class="page active">
+<div class="card">
+<h2>🌾 Welcome to AgriTech</h2>
+<p>Login or create your farming account.</p>
+<label>Email</label>
+<input id="email" type="email" placeholder="Enter email">
+<label>Password</label>
+<input id="password" type="password" placeholder="At least 6 characters">
+<button onclick="auth('register')">Register</button>
+<button onclick="auth('login')">Login</button>
+<div id="authMsg" class="result">Your account stays on this device in this demo.</div>
+</div>
+</section>
+
+<section id="home" class="page">
+<div class="card">
+<h2>🌿 Smart Farming Dashboard</h2>
+<p>Welcome! Use technology to support crop health, save water, and reduce food waste.</p>
+<div class="result">
+🌱 Crop health: Check leaf images
+💧 Water: Get irrigation advice
+🌾 Productivity: Estimate crop yield
+🌍 Sustainability: Protect soil and reduce waste
+</div>
+</div>
+<div class="card">
+<h2>Our Mission</h2>
+<p>Support farmers and contribute to UN Sustainable Development Goals 2, 12, 13 and 15.</p>
+</div>
+</section>
+
+<section id="leaf" class="page">
+<div class="card">
+<h2>🍃 Leaf Image Checker</h2>
+<p>Upload a leaf image for a visual check.</p>
+<label>Crop type</label>
+<select id="crop">
+<option>Unknown crop</option><option>Tomato</option>
+<option>Potato</option><option>Rice</option><option>Wheat</option>
+<option>Maize</option><option>Cotton</option><option>Other</option>
+</select>
+<input id="leafFile" type="file" accept="image/*">
+<img id="preview" style="display:none" alt="Selected leaf">
+<button onclick="checkLeaf()">Check Image</button>
+<div id="leafResult" class="result">Your result will appear here.</div>
+</div>
+</section>
+
+<section id="yield" class="page">
+<div class="card">
+<h2>🌾 Crop Yield Estimator</h2>
+<label>Crop</label>
+<select id="ycrop">
+<option value="3">Wheat</option><option value="4">Rice</option>
+<option value="3.5">Maize</option><option value="2.5">Potato</option>
+</select>
+<label>Farm area (hectares)</label>
+<input id="area" type="number" min="0.01" value="1">
+<label>Estimated yield per hectare (tonnes)</label>
+<input id="rate" type="number" min="0.01" value="3">
+<button onclick="yieldCalc()">Estimate Yield</button>
+<div id="yieldResult" class="result"></div>
+<small>Uses your input, not a trained prediction model.</small>
+</div>
+</section>
+
+<section id="water" class="page">
+<div class="card">
+<h2>💧 Irrigation Advisor</h2>
+<label>Soil moisture (%)</label>
+<input id="moisture" type="number" min="0" max="100" value="30">
+<label>Temperature (°C)</label>
+<input id="temp" type="number" value="30">
+<label>Crop</label>
+<select id="wcrop"><option>Wheat</option><option>Rice</option><option>Tomato</option><option>Maize</option></select>
+<button onclick="waterAdvice()">Get Advice</button>
+<div id="waterResult" class="result"></div>
+<small>Advice is based on simple rules, not live sensors.</small>
+</div>
+</section>
+
+<section id="soil" class="page">
+<div class="card">
+<h2>🌍 Soil Health Checker</h2>
+<label>Soil pH (0–14)</label>
+<input id="ph" type="number" min="0" max="14" step=".1" value="6.5">
+<label>Nitrogen level (mg/kg)</label>
+<input id="nitrogen" type="number" min="0" value="40">
+<label>Organic matter (%)</label>
+<input id="organic" type="number" min="0" max="100" step=".1" value="3">
+<button onclick="soilCheck()">Check Soil</button>
+<div id="soilResult" class="result"></div>
+<small>General screening only. Actual soil needs lab testing.</small>
+</div>
+</section>
+
+<section id="food" class="page">
+<div class="card">
+<h2>♻️ Food Waste Planner</h2>
+<label>Available food stock (kg)</label>
+<input id="stock" type="number" min="0" value="100">
+<label>Expected demand (kg)</label>
+<input id="demand" type="number" min="0" value="75">
+<label>Storage life remaining (days)</label>
+<input id="days" type="number" min="0" value="5">
+<button onclick="foodPlan()">Create Plan</button>
+<div id="foodResult" class="result"></div>
+</div>
+</section>
+</main>
+
+<footer>AgriTech • Smart Farming for a Sustainable Future</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function getUsers(){
+  try{return JSON.parse(localStorage.getItem("agritech_users")||"{}")}
+  catch(e){return {}}
+}
+
+function auth(action){
+  const email=$("email").value.trim().toLowerCase();
+  const pass=$("password").value;
+  if(!email || !email.includes("@") || pass.length<6){
+    $("authMsg").textContent="Enter a valid email and a password of at least 6 characters.";
+    return;
+  }
+  const users=getUsers();
+  if(action==="register"){
+    if(users[email]){
+      $("authMsg").textContent="Account already exists. Please log in.";
+      return;
+    }
+    users[email]=pass;
+    localStorage.setItem("agritech_users",JSON.stringify(users));
+    $("authMsg").textContent="Registration successful! Now tap Login.";
+    return;
+  }
+  if(users[email]!==pass){
+    $("authMsg").textContent="Incorrect email or password, or account not found.";
+    return;
+  }
+  sessionStorage.setItem("agritech_session",email);
+  startApp();
+}
+
+function startApp(){
+  if(!sessionStorage.getItem("agritech_session"))return;
+  $("nav").style.display="flex";
+  show("home");
+}
+
+function logout(){
+  sessionStorage.removeItem("agritech_session");
+  $("nav").style.display="none";
+  show("login");
+}
+
+function show(id){
+  if(id!=="login"&&!sessionStorage.getItem("agritech_session")){
+    id="login";
+  }
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+
+let imageReady=false;
+$("leafFile").addEventListener("change",function(){
+  const file=this.files[0];
+  imageReady=false;
+  $("preview").style.display="none";
+  if(!file)return;
+  if(!file.type.startsWith("image/")){
+    $("leafResult").textContent="Please select an image.";
+    this.value="";
+    return;
+  }
+  if(file.size>5*1024*1024){
+    $("leafResult").textContent="Image must be smaller than 5 MB.";
+    this.value="";
+    return;
+  }
+  const reader=new FileReader();
+  reader.onload=function(e){
+    $("preview").src=e.target.result;
+    $("preview").style.display="block";
+    imageReady=true;
+  };
+  reader.readAsDataURL(file);
+});
+
+function checkLeaf(){
+  if(!$("leafFile").files.length||!imageReady){
+    $("leafResult").textContent="Please upload a valid leaf image first.";
+    return;
+  }
+  $("leafResult").textContent=
+    "Image uploaded successfully!\nCrop selected: "+$("crop").value+
+    "\n\nThis demo does not have a trained disease-detection AI model, so it cannot identify the disease from the image.\n\nNext steps:\n• Check leaves for unusual spots, yellowing or wilting.\n• Compare symptoms with a trusted agricultural guide.\n• Ask a local agricultural expert before applying treatments.";
+}
+
+function yieldCalc(){
+  const a=+$("area").value,r=+$("rate").value;
+  if(!Number.isFinite(a)||!Number.isFinite(r)||a<=0||r<=0){
+    $("yieldResult").textContent="Enter positive values for area and yield rate.";return;
+  }
+  $("yieldResult").textContent="Estimated total yield: "+(a*r).toFixed(2)+" tonnes\nCrop: "+$("ycrop").selectedOptions[0].text+"\n\nThis is a basic calculation: area × yield per hectare. It is not an AI forecast.";
+}
+
+function waterAdvice(){
+  const m=+$("moisture").value,t=+$("temp").value;
+  if(!Number.isFinite(m)||!Number.isFinite(t)||m<0||m>100){
+    $("waterResult").textContent="Enter valid readings. Moisture must be 0–100%.";return;
+  }
+  let msg=m<20?"Soil moisture is low. Check the crop and soil before irrigating.":m<40?"Moisture is moderate-low. Check the crop's water needs and weather.":"Moisture reading is relatively high. Check soil drainage before adding water.";
+  if(t>=35)msg+=" High temperature may increase water loss.";
+  msg+="\nCrop: "+$("wcrop").value+"\nAvoid overwatering; use actual field conditions to decide.";
+  $("waterResult").textContent=msg;
+}
+
+function soilCheck(){
+  const p=+$("ph").value,n=+$("nitrogen").value,o=+$("organic").value;
+  if(!Number.isFinite(p)||!Number.isFinite(n)||!Number.isFinite(o)||p<0||p>14||n<0||o<0||o>100){
+    $("soilResult").textContent="Enter valid soil values.";return;
+  }
+  $("soilResult").textContent=
+    "pH: "+(p<5.5?"Acidic":p>7.5?"Alkaline":"Near neutral")+
+    "\nNitrogen reading: "+(n<20?"Low":n<50?"Moderate":"Higher")+
+    "\nOrganic matter: "+(o<2?"Low":o<5?"Moderate":"Higher")+
+    "\n\nThese are general screening labels, not a laboratory diagnosis. Crop needs vary. Consult a soil testing service before adding fertiliser.";
+}
+
+function foodPlan(){
+  const s=+$("stock").value,d=+$("demand").value,days=+$("days").value;
+  if(!Number.isFinite(s)||!Number.isFinite(d)||!Number.isFinite(days)||s<0||d<0||days<0){
+    $("foodResult").textContent="Enter values of zero or greater.";return;
+  }
+  let msg="Available stock: "+s+" kg\nExpected demand: "+d+" kg\n";
+  if(s>d)msg+="Potential surplus: "+(s-d)+" kg\nPlan safe storage, share with nearby buyers, or donate safe surplus food.";
+  else msg+="Potential shortfall: "+(d-s)+" kg\nReview supply and demand before the next harvest or delivery.";
+  if(days<=2)msg+="\nStorage life is short: prioritise safe distribution and inspect food quality.";
+  $("foodResult").textContent=msg;
+}
+
+startApp();
+</script>
+</body>
+</html>
